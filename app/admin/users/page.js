@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import AdminUsersClient from "@/app/_components/AdminUsersClient";
 import axiosInstance from "@/app/_utils/axiosInstance";
 import { cookies } from "next/headers";
