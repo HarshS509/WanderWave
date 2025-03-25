@@ -45,12 +45,16 @@ export async function createPost(bookingData, prevState, formData) {
       .getAll()
       .map((cookie) => `${cookie.name}=${cookie.value}`)
       .join("; ");
+    const accessToken = cookieStore.get("access_token")?.value;
 
     const response = await axiosInstance.post("/api/posts", bodyObject, {
       headers: {
-        Cookie: cookieString, // Note the capital "C" in Cookie
+        Authorization: accessToken ? `Bearer ${accessToken}` : "",
+        Cookie: cookieString, // Keep this as a fallback
       },
     });
+
+    // console.log(response, "response");
 
     revalidatePath("/");
     return {
@@ -59,7 +63,7 @@ export async function createPost(bookingData, prevState, formData) {
       resetKey: Date.now(),
     };
   } catch (e) {
-    console.log(e.message);
+    console.log(e.message, e);
     return {
       message: "Blog creation failed :(",
       success: false,
