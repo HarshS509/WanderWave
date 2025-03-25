@@ -41,22 +41,35 @@ export async function createPost(bookingData, prevState, formData) {
       isFeaturedPost: formData.get("isFeaturedPost") === "on",
     };
     const cookieStore = cookies();
+    // Get all cookies for logging
     const cookieString = cookieStore
       .getAll()
       .map((cookie) => `${cookie.name}=${cookie.value}`)
       .join("; ");
+
+    // Specifically look for access_token
     const accessToken = cookieStore.get("access_token")?.value;
 
-    console.log("Sending request with headers:", {
-      Authorization: accessToken ? `Bearer ${accessToken}` : "",
+    console.log("All cookies:", cookieString);
+    console.log("Access token from cookies:", accessToken);
+
+    // Create headers with both approaches
+    const headers = {
+      "Content-Type": "application/json",
       Cookie: cookieString,
-    });
+    };
+
+    // Only add Authorization if we have a token
+    if (accessToken) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+
+    console.log("Sending request with headers:", headers);
 
     const response = await axiosInstance.post("/api/posts", bodyObject, {
-      headers: {
-        Authorization: accessToken ? `Bearer ${accessToken}` : "",
-        Cookie: cookieString, // Keep this as a fallback
-      },
+      headers,
+      // This is crucial for cross-domain requests with credentials
+      withCredentials: true,
     });
 
     // console.log(response, "response");
