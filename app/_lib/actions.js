@@ -12,8 +12,17 @@ export async function createPost(bookingData, prevState, formData) {
   const description = formData.get("description");
   const title = formData.get("title");
   const authorName = formData.get("authorName");
-  const imageLink = formData.get("imageLink");
-  const { categories } = bookingData;
+  // Only get imageLink from formData if it's not already in bookingData
+  const imageLink = bookingData.imageLink || formData.get("imageLink");
+  const { categories, isFeaturedPost } = bookingData;
+
+  console.log("Form data received:", {
+    title,
+    authorName,
+    imageLink,
+    description,
+    categories,
+  });
 
   const errors = {
     title: !title ? "Title is required" : null,
@@ -36,13 +45,17 @@ export async function createPost(bookingData, prevState, formData) {
     // Get token from the client component
     const { accessToken } = bookingData;
 
-    // Create the body object without the token
-    const { accessToken: _, ...postData } = bookingData;
+    // Create the body object with all the data
     const bodyObject = {
-      ...postData,
-      // other properties from formData if needed
+      title,
+      description,
+      authorName,
+      imageLink,
+      categories,
+      isFeaturedPost,
     };
 
+    console.log("Sending to API:", bodyObject);
     console.log(
       "Using token for authorization:",
       accessToken ? "Token present" : "No token"
@@ -71,7 +84,6 @@ export async function createPost(bookingData, prevState, formData) {
       resetKey: prevState.resetKey,
     };
   }
-  // If no errors, process the form data
 }
 
 export async function loginUser(prevState, formData) {
