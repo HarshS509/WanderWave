@@ -8,6 +8,14 @@ import EyeOffIcon from "@/app/_assets/svg/eye-off.svg";
 import { toast } from "react-toastify";
 import userState from "../_utils/user-state";
 
+// Function to store auth token in localStorage
+const storeAuthToken = (token) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("access_token", token);
+    console.log("Token stored in localStorage");
+  }
+};
+
 const initialState = {
   errors: {
     userNameOrEmail: null,
@@ -18,10 +26,12 @@ const initialState = {
   message: null,
   resetKey: Date.now(),
 };
+
 function SigninForm() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [state, action] = useFormState(loginUser, initialState);
   const { pending } = useFormStatus();
+
   useEffect(
     function () {
       if (state.success) {
@@ -29,6 +39,16 @@ function SigninForm() {
         const userId = state.data?.data?.user?._id;
         const userRole = state.data?.data?.user?.role;
         userState.setUser({ _id: userId, role: userRole });
+
+        // Store the token in localStorage if it exists in the response
+        const token = state.data?.token || state.data?.data?.token;
+        if (token) {
+          storeAuthToken(token);
+          console.log("Authentication token stored");
+        } else {
+          console.warn("No token found in login response");
+        }
+
         setTimeout(() => {
           window.location.href = "/";
         }, 2000);

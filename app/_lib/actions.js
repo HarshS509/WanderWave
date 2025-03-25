@@ -7,6 +7,12 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { AxiosError, isAxiosError } from "axios";
 import { cookies } from "next/headers";
+
+export function storeAuthToken(token) {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("access_token", token);
+  }
+}
 export async function createPost(bookingData, prevState, formData) {
   const description = formData.get("description");
   const title = formData.get("title");
@@ -32,43 +38,26 @@ export async function createPost(bookingData, prevState, formData) {
   }
 
   try {
+    // Get token from the client component
+    const { accessToken } = bookingData;
+
+    // Create the body object without the token
+    const { accessToken: _, ...postData } = bookingData;
     const bodyObject = {
-      title,
-      authorName,
-      imageLink,
-      categories,
-      description,
-      isFeaturedPost: formData.get("isFeaturedPost") === "on",
-    };
-    const cookieStore = cookies();
-    // Get all cookies for logging
-    const cookieString = cookieStore
-      .getAll()
-      .map((cookie) => `${cookie.name}=${cookie.value}`)
-      .join("; ");
-
-    // Specifically look for access_token
-    const accessToken = cookieStore.get("access_token")?.value;
-
-    console.log("All cookies:", cookieString);
-    console.log("Access token from cookies:", accessToken);
-
-    // Create headers with both approaches
-    const headers = {
-      "Content-Type": "application/json",
-      Cookie: cookieString,
+      ...postData,
+      // other properties from formData if needed
     };
 
-    // Only add Authorization if we have a token
-    if (accessToken) {
-      headers["Authorization"] = `Bearer ${accessToken}`;
-    }
-
-    console.log("Sending request with headers:", headers);
+    console.log(
+      "Using token for authorization:",
+      accessToken ? "Token present" : "No token"
+    );
 
     const response = await axiosInstance.post("/api/posts", bodyObject, {
-      headers,
-      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: accessToken ? `Bearer ${accessToken}` : "",
+      },
     });
 
     // console.log(response, "response");

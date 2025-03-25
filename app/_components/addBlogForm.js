@@ -6,6 +6,7 @@ import ModalComponent from "./modal";
 import { useFormStatus, useFormState } from "react-dom";
 import CategoryPill from "./category-pill";
 import { toast } from "react-toastify";
+import { getAuthToken } from "../_utils/auth-utils";
 
 const initialState = {
   errors: {
@@ -19,6 +20,7 @@ const initialState = {
   success: null,
   resetKey: Date.now(),
 };
+
 function AddBlogForm() {
   const [selectedImage, setSelectedImage] = useState("");
 
@@ -26,18 +28,30 @@ function AddBlogForm() {
     imageLink: "",
     categories: [],
     isFeaturedPost: false,
+    accessToken: typeof window !== "undefined" ? getAuthToken() : null,
   });
+
+  useEffect(() => {
+    setData((prevData) => ({
+      ...prevData,
+      accessToken: getAuthToken(),
+    }));
+  }, []);
+
   const createPostWithData = createPost.bind(null, data);
   const [state, action] = useFormState(createPostWithData, initialState);
   const [modal, setModal] = useState(false);
+
   const handleImageSelect = (imageUrl) => {
     setSelectedImage(imageUrl);
   };
+
   const isValidCategory = (category) => {
     return (
       data?.categories?.length >= 3 && !data?.categories?.includes(category)
     );
   };
+
   const handleselector = () => {
     setData((data) => {
       return {
@@ -47,6 +61,7 @@ function AddBlogForm() {
     });
     setModal(false);
   };
+
   const handleCategoryClick = (category) => {
     if (isValidCategory(category)) return;
     if (data.categories.includes(category)) {
@@ -65,6 +80,7 @@ function AddBlogForm() {
       });
     }
   };
+
   const handleImageLinkChange = (e) => {
     setData((data) => {
       return {
@@ -73,6 +89,7 @@ function AddBlogForm() {
       };
     });
   };
+
   useEffect(
     function () {
       if (state.success === false) {
@@ -80,7 +97,12 @@ function AddBlogForm() {
       }
       if (state.success === true) {
         toast.success("Blog created successfully!");
-        setData(initialState);
+        setData({
+          imageLink: "",
+          categories: [],
+          isFeaturedPost: false,
+          accessToken: getAuthToken(),
+        });
         setTimeout(() => {
           window.location.href = "/";
         }, 2000);
@@ -88,6 +110,7 @@ function AddBlogForm() {
     },
     [state]
   );
+
   return (
     <>
       <form action={action} className="sm:w-5/6 lg:w-2/3">
@@ -100,8 +123,13 @@ function AddBlogForm() {
               name="isFeaturedPost"
               type="checkbox"
               className="ml-2 h-5 w-5 cursor-pointer rounded-full accent-purple-400"
-              // checked={formData.isFeaturedPost}
-              // onChange={handleCheckboxChange}
+              onChange={(e) =>
+                setData((prev) => ({
+                  ...prev,
+                  isFeaturedPost: e.target.checked,
+                }))
+              }
+              checked={data.isFeaturedPost}
             />
           </label>
         </div>
@@ -136,6 +164,7 @@ function AddBlogForm() {
             <span className="p-2 text-sm text-red-500">{`${state.errors.description}`}</span>
           )}
         </div>
+
         <div className="mb-2">
           <div className="px-2 py-1 font-medium text-light-secondary dark:text-dark-secondary">
             Author name *
