@@ -9,7 +9,7 @@ const initialState = {
 };
 const FormComponent = () => {
   const [state, action] = useFormState(createPost, initialState);
-  // console.log(state);
+
   return (
     <form
       action={action}

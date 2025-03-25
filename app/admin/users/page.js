@@ -16,7 +16,7 @@ async function getUsers() {
         Cookie: cookieString, // Note the capital "C" in Cookie
       },
     });
-    console.log("res is ", response.data.users);
+
     return response?.data?.users;
   } catch (error) {
     console.error("Error fetching users:", error);
@@ -26,8 +26,7 @@ async function getUsers() {
 
 const Page = async () => {
   const users = await getUsers();
-  // const response = await axiosInstance.get("/api/user");
-  // console.log(users);
+
   return (
     <div className="w-full p-3 px-5 sm:p-12">
       <h1 className="absolute left-16 top-3 text-2xl font-bold text-light-title dark:text-dark-title sm:static">

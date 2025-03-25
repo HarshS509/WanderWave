@@ -25,7 +25,6 @@ function SigninForm() {
   useEffect(
     function () {
       if (state.success) {
-        // console.log("reached toast success");
         toast.success(state.message);
         const userId = state.data?.data?.user?._id;
         const userRole = state.data?.data?.user?.role;

@@ -14,7 +14,6 @@ async function Page({ params }) {
   const post = await getPostById(postId);
   const relatedCategoryPosts = await getRelatedPosts(post.categories);
 
-  // console.log(post, relatedCategoryPosts);
   return (
     <div className="flex-grow bg-light dark:bg-dark">
       <div className="relative flex flex-col">

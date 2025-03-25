@@ -8,9 +8,6 @@ import { redirect } from "next/navigation";
 import { AxiosError, isAxiosError } from "axios";
 import { cookies } from "next/headers";
 export async function createPost(bookingData, prevState, formData) {
-  // console.log(bookingData);
-  // console.log(formData.get("isFeaturedPost"));
-  // console.log(bookingData, formData);
   const description = formData.get("description");
   const title = formData.get("title");
   const authorName = formData.get("authorName");
@@ -48,13 +45,13 @@ export async function createPost(bookingData, prevState, formData) {
       .getAll()
       .map((cookie) => `${cookie.name}=${cookie.value}`)
       .join("; ");
-    console.log("hi going");
+
     const response = await axiosInstance.post("/api/posts", bodyObject, {
       headers: {
         Cookie: cookieString, // Note the capital "C" in Cookie
       },
     });
-    console.log("res is ", response.data);
+
     revalidatePath("/");
     return {
       message: "Blog post created successfully!",
@@ -62,6 +59,7 @@ export async function createPost(bookingData, prevState, formData) {
       resetKey: Date.now(),
     };
   } catch (e) {
+    console.log(e.message);
     return {
       message: "Blog creation failed :(",
       success: false,
@@ -69,17 +67,6 @@ export async function createPost(bookingData, prevState, formData) {
     };
   }
   // If no errors, process the form data
-  console.log("Form data:", {
-    title,
-    description,
-    authorName,
-    imageLink,
-    categories,
-  });
-
-  // Here you would typically save the data to your database
-
-  return { message: "Blog post created successfully!" };
 }
 
 export async function loginUser(prevState, formData) {
@@ -105,7 +92,7 @@ export async function loginUser(prevState, formData) {
   try {
     const preData = await response;
     const { data } = preData;
-    // console.log(data);
+
     revalidatePath("/");
 
     return {

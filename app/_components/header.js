@@ -12,7 +12,7 @@ import ThemeButton from "./ThemeButton";
 
 function Header() {
   const { token, loading } = useAuthData();
-  // console.log(token);
+
   const router = useRouter();
   const user = userState.getUser();
   const handleLogout = async () => {
@@ -20,8 +20,9 @@ function Header() {
       await axiosInstance.post("/api/auth/logout");
       userState.removeUser();
       toast.success("Logged out successfully");
-      router.push("/");
-      router.refresh();
+
+      // Force a complete page reload to clear all React state
+      window.location.href = "/";
     } catch (error) {
       console.error(error.response?.data?.message || "An error occurred");
       toast.error("Signout failed");
@@ -119,7 +120,11 @@ function Header() {
                       router.push("/signin");
                     }}
                   >
-                    <img className="h-9 w-9" src={LogInIcon} alt="Login Icon" />
+                    <img
+                      className="h-9 w-9"
+                      src="/login-icon.svg"
+                      alt="Login Icon"
+                    />
                   </button>
                 </div>
               )}
