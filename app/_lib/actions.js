@@ -8,11 +8,6 @@ import { redirect } from "next/navigation";
 import { AxiosError, isAxiosError } from "axios";
 import { cookies } from "next/headers";
 
-export function storeAuthToken(token) {
-  if (typeof window !== "undefined") {
-    localStorage.setItem("access_token", token);
-  }
-}
 export async function createPost(bookingData, prevState, formData) {
   const description = formData.get("description");
   const title = formData.get("title");
