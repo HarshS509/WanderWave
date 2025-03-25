@@ -41,7 +41,7 @@ function SigninForm() {
         userState.setUser({ _id: userId, role: userRole });
 
         // Store the token in localStorage if it exists in the response
-        const token = state.data?.token || state.data?.data?.token;
+        const token = state.data?.accessToken || state.data?.data?.accessToken;
         if (token) {
           storeAuthToken(token);
           console.log("Authentication token stored");
