@@ -47,6 +47,11 @@ export async function createPost(bookingData, prevState, formData) {
       .join("; ");
     const accessToken = cookieStore.get("access_token")?.value;
 
+    console.log("Sending request with headers:", {
+      Authorization: accessToken ? `Bearer ${accessToken}` : "",
+      Cookie: cookieString,
+    });
+
     const response = await axiosInstance.post("/api/posts", bodyObject, {
       headers: {
         Authorization: accessToken ? `Bearer ${accessToken}` : "",
