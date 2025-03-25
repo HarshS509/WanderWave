@@ -68,7 +68,6 @@ export async function createPost(bookingData, prevState, formData) {
 
     const response = await axiosInstance.post("/api/posts", bodyObject, {
       headers,
-      // This is crucial for cross-domain requests with credentials
       withCredentials: true,
     });
 
